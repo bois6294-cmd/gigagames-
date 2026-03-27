@@ -21,11 +21,10 @@ iframe {width:100%;height:80vh;border:none;margin-top:10px;}
 
 <header>🎮 GigaGames Hub</header>
 
-<input id="search" placeholder="Search games..." oninput="filterGames()">
+<input id="search" placeholder="Search games..." oninput="renderGames()">
 
 <div class="categories">
   <button onclick="setCategory('all')">All</button>
-  <button onclick="setCategory('action')">Action</button>
   <button onclick="setCategory('puzzle')">Puzzle</button>
   <button onclick="setCategory('arcade')">Arcade</button>
 </div>
@@ -35,12 +34,12 @@ iframe {width:100%;height:80vh;border:none;margin-top:10px;}
 
 <script>
 
+// ✅ ONLY WORKING EMBED GAMES
 const gameList = [
-  {name:'2048', url:'https://play2048.co/', category:'puzzle'},
-  {name:'Slope', url:'https://ubg100.github.io/games/slope/', category:'action'},
-  {name:'Run 3', url:'https://ubg100.github.io/games/run-3/', category:'action'},
-  {name:'Pacman', url:'https://ubg100.github.io/games/pacman/', category:'arcade'},
-  {name:'Flappy Bird', url:'https://ubg100.github.io/games/flappy-bird/', category:'arcade'}
+  {name:'2048', url:'https://play2048.co/', category:'puzzle', embed:true},
+  {name:'Hextris', url:'https://hextris.io/', category:'puzzle', embed:true},
+  {name:'Flappy Bird', url:'https://nebezb.com/floppybird/', category:'arcade', embed:true},
+  {name:'Open Snake', url:'https://playsnake.org/', category:'arcade', embed:true}
 ];
 
 let currentCategory = 'all';
@@ -51,20 +50,20 @@ function renderGames(){
 
   container.innerHTML = gameList
     .filter(g => (currentCategory==='all'||g.category===currentCategory) && g.name.toLowerCase().includes(search))
-    .map(g => `<div class="card" onclick="loadGame('${g.url}')">${g.name}</div>`)
+    .map(g => `<div class="card" onclick="openGame('${g.url}', ${g.embed})">${g.name}</div>`)
     .join('');
 }
 
-function loadGame(url){
-  document.getElementById('gameArea').innerHTML = `<iframe src="${url}"></iframe>`;
+function openGame(url, embed){
+  if(embed){
+    document.getElementById('gameArea').innerHTML = `<iframe src="${url}"></iframe>`;
+  } else {
+    window.open(url, '_blank');
+  }
 }
 
 function setCategory(cat){
   currentCategory = cat;
-  renderGames();
-}
-
-function filterGames(){
   renderGames();
 }
 
