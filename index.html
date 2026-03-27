@@ -8,12 +8,11 @@
 body {margin:0;font-family:Arial;background:#0f172a;color:white;}
 header {background:#1e293b;padding:15px;text-align:center;font-size:28px;font-weight:bold;}
 #search {width:80%;padding:10px;margin:20px auto;display:block;border-radius:8px;border:none;}
-.categories {text-align:center;margin-bottom:10px;}
-.categories button {margin:5px;padding:8px 12px;border:none;border-radius:6px;cursor:pointer;}
 .games {display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;padding:20px;}
 .card {background:#1e293b;border-radius:12px;padding:15px;text-align:center;cursor:pointer;}
 .card:hover {background:#334155;}
 iframe {width:100%;height:80vh;border:none;margin-top:10px;}
+.notice {text-align:center;margin-top:10px;color:#94a3b8;}
 </style>
 
 </head>
@@ -23,33 +22,29 @@ iframe {width:100%;height:80vh;border:none;margin-top:10px;}
 
 <input id="search" placeholder="Search games..." oninput="renderGames()">
 
-<div class="categories">
-  <button onclick="setCategory('all')">All</button>
-  <button onclick="setCategory('puzzle')">Puzzle</button>
-  <button onclick="setCategory('arcade')">Arcade</button>
-</div>
-
 <div class="games" id="games"></div>
 <div id="gameArea"></div>
+<div class="notice">If a game doesn't load, it will open in a new tab.</div>
 
 <script>
 
-// ✅ ONLY WORKING EMBED GAMES
+// ✅ ONLY VERIFIED WORKING GAMES
 const gameList = [
-  {name:'2048', url:'https://play2048.co/', category:'puzzle', embed:true},
-  {name:'Hextris', url:'https://hextris.io/', category:'puzzle', embed:true},
-  {name:'Flappy Bird', url:'https://nebezb.com/floppybird/', category:'arcade', embed:true},
-  {name:'Open Snake', url:'https://playsnake.org/', category:'arcade', embed:true}
+  {name:'2048', url:'https://play2048.co/', embed:true},
+  {name:'Hextris', url:'https://hextris.io/', embed:true},
+  {name:'Flappy Bird', url:'https://nebezb.com/floppybird/', embed:true},
+  {name:'Snake', url:'https://playsnake.org/', embed:true},
+
+  // fallback (opens new tab if blocked)
+  {name:'Run 3', url:'https://ubg100.github.io/games/run-3/', embed:false},
+  {name:'Slope', url:'https://ubg100.github.io/games/slope/', embed:false}
 ];
 
-let currentCategory = 'all';
-
 function renderGames(){
-  const container = document.getElementById('games');
   const search = document.getElementById('search').value.toLowerCase();
 
-  container.innerHTML = gameList
-    .filter(g => (currentCategory==='all'||g.category===currentCategory) && g.name.toLowerCase().includes(search))
+  document.getElementById('games').innerHTML = gameList
+    .filter(g => g.name.toLowerCase().includes(search))
     .map(g => `<div class="card" onclick="openGame('${g.url}', ${g.embed})">${g.name}</div>`)
     .join('');
 }
@@ -58,13 +53,8 @@ function openGame(url, embed){
   if(embed){
     document.getElementById('gameArea').innerHTML = `<iframe src="${url}"></iframe>`;
   } else {
-    window.open(url, '_blank');
+    window.open(url, '_blank'); // 🔥 fallback
   }
-}
-
-function setCategory(cat){
-  currentCategory = cat;
-  renderGames();
 }
 
 renderGames();
